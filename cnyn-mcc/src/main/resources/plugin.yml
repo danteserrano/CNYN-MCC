@@ -1,0 +1,18 @@
+name: cnyn-mcc
+version: 1.0.0
+main: io.github.danteserrano.Main
+api-version: 1.19
+
+commands:
+  kit:
+    description: Gives kit
+    usage: /kit kit_name
+  arena:
+    description: Teleports to arena
+    usage: /arena arena_number
+  game-manager:
+    description: Game Manager
+    usage: /game-manager usage <><><>
+
+permissions:
+
