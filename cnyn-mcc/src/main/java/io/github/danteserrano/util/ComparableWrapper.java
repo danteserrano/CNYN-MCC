@@ -1,8 +1,10 @@
-package io.github.danteserrano.arena;
+package io.github.danteserrano.util;
+
+import org.jetbrains.annotations.NotNull;
 
 public class ComparableWrapper<T> implements Comparable<ComparableWrapper<T>>{
-    static Integer nextId = 0;
-    private final Integer mId;
+    static @NotNull Integer nextId = 0;
+    private final @NotNull Integer mId;
     private final T mInner;
 
     public ComparableWrapper(T inner){
@@ -16,7 +18,7 @@ public class ComparableWrapper<T> implements Comparable<ComparableWrapper<T>>{
     }
 
     @Override
-    public int compareTo(ComparableWrapper<T> o) {
+    public int compareTo(@NotNull ComparableWrapper<T> o) {
         return mId.compareTo(o.mId);
     }
 }

@@ -1,12 +1,13 @@
-package io.github.danteserrano.arena;
+package io.github.danteserrano.games;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 class TeamNotFoundException extends Exception {
-    String mTeamName;
+    final String mTeamName;
     TeamNotFoundException(String teamName){
         this.mTeamName = teamName;
     }
@@ -24,7 +25,7 @@ public class PlayerManager {
         mPlayers.add(uuid);
     }
 
-    public TreeSet<UUID> getPlayers() {
+    public @NotNull TreeSet<UUID> getPlayers() {
         return mPlayers;
     }
 
@@ -38,7 +39,7 @@ public class PlayerManager {
         }
     }
 
-    public Vector<Player> getOnlinePlayersEntities() {
+    public @NotNull Vector<Player> getOnlinePlayersEntities() {
         Vector<Player> output = new Vector<>();
         for (UUID uuid : getPlayers()) {
             var player = Bukkit.getPlayer(uuid);
@@ -48,5 +49,15 @@ public class PlayerManager {
             output.add(player);
         }
         return output;
+    }
+
+    public void clearInventories() {
+        for (var player : getOnlinePlayersEntities()) {
+            player.getInventory().clear();
+        }
+    }
+
+    public boolean contains(Player player) {
+        return mPlayers.contains(player.getUniqueId());
     }
 }

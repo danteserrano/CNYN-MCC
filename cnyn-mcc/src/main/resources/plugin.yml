@@ -14,5 +14,4 @@ commands:
     description: Game Manager
     usage: /game-manager usage <><><>
 
-permissions:
 

@@ -1,0 +1,10 @@
+collision-boxes:
+  red-light-green-light-safe:
+    p1:
+      x: 10
+      y: 60
+      z: 10
+    p2:
+      x: 20
+      y: 65
+      z: 15

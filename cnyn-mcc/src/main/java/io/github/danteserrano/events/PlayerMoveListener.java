@@ -1,9 +1,12 @@
-package io.github.danteserrano.arena;
+package io.github.danteserrano.events;
 
+import io.github.danteserrano.util.ComparableWrapper;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.TreeSet;
 import java.util.function.Consumer;
 
@@ -17,11 +20,13 @@ public class PlayerMoveListener implements Listener {
         }
     }
 
-    public static void addCallback(ComparableWrapper<Consumer<PlayerMoveEvent>> callback) {
+    public static void addCallback(@Nullable ComparableWrapper<Consumer<PlayerMoveEvent>> callback) {
+        if(Objects.isNull(callback)) { return; }
         CALLBACKS.add(callback);
     }
 
-    public static void removeCallback(ComparableWrapper<Consumer<PlayerMoveEvent>> callback) {
+    public static void removeCallback(@Nullable ComparableWrapper<Consumer<PlayerMoveEvent>> callback) {
+        if(Objects.isNull(callback)) { return; }
         CALLBACKS.remove(callback);
     }
 

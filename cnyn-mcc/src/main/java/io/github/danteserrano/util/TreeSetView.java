@@ -13,7 +13,7 @@ public class TreeSetView<T> {
         return mTreeSet.size();
     }
 
-    public boolean contains(Object o) {
+    public boolean contains(T o) {
         return mTreeSet.contains(o);
     }
 }
