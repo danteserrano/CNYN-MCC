@@ -3,6 +3,7 @@ package io.github.danteserrano;
 import io.github.danteserrano.games.GameManager;
 import io.github.danteserrano.games.GameManagerCommandExecutor;
 import io.github.danteserrano.events.PlayerMoveListener;
+import io.github.danteserrano.games.GameManagerTabCompleter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,10 +29,10 @@ public class Main extends JavaPlugin {
 
 
         mGameManager = new GameManager();
-        GameManagerCommandExecutor mGameManagerCommandExecutor = new GameManagerCommandExecutor(mGameManager);
         var gameManagerCommand = getCommand("game-manager");
         assert gameManagerCommand != null; // CHECK plugin.yml
-        gameManagerCommand.setExecutor(mGameManagerCommandExecutor);
+        gameManagerCommand.setExecutor(new GameManagerCommandExecutor(mGameManager));
+        gameManagerCommand.setTabCompleter(new GameManagerTabCompleter(mGameManager));
 
 
         // Create configuration file.

@@ -13,6 +13,7 @@ public class GameManagerCommandExecutor implements CommandExecutor {
     final GameManager mGameManager;
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String @NotNull [] args) {
+        // Remember to update GameManagerTabCompleter.java
         if (args.length == 1 && Objects.equals(args[0], "endall")) {
             sender.sendMessage("Ending all games...");
             mGameManager.endAllGames();
