@@ -42,12 +42,12 @@ public class GameManager {
         mGames.put(lobbyName, game);
     }
 
-    public boolean startGame(String lobbyName) throws LobbyNotFoundException {
+    public void startGame(String lobbyName) throws LobbyNotFoundException {
         if (!mGames.containsKey(lobbyName)) {
             throw new LobbyNotFoundException(lobbyName);
         }
         var game = mGames.get(lobbyName);
-        return game.transitionState(io.github.danteserrano.games.GameState.STARTING);
+        game.startGame();
     }
 
     public void endGame(String lobbyName) throws LobbyNotFoundException {

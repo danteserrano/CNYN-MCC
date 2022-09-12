@@ -1,9 +1,8 @@
 package io.github.danteserrano.games;
 
 import io.github.danteserrano.Main;
-import io.github.danteserrano.util.ComparableWrapper;
+import io.github.danteserrano.util.*;
 import io.github.danteserrano.events.PlayerMoveListener;
-import io.github.danteserrano.util.Countdown;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -14,31 +13,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.Random;
-import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
-class StateTransition implements Comparable<StateTransition> {
-    final GameState mFrom;
-    final GameState mTo;
-
-    StateTransition(GameState from, GameState to) {
-        mFrom = from;
-        mTo = to;
-    }
-
-    @Override
-    public int compareTo(@NotNull StateTransition o) {
-        int x = mFrom.compareTo(o.mFrom);
-        if (x != 0) {
-            return x;
-        }
-        x = mTo.compareTo(o.mTo);
-        return x;
-    }
-}
-
-public class RedLightGreenLightGame {
+public class RedLightGreenLightGame implements Game {
     final @NotNull PlayerManager mPlayers = new PlayerManager();
     final @NotNull PlayerManager mDeadPlayers = new PlayerManager();
     final @NotNull PlayerManager mSafePlayers = new PlayerManager();
@@ -48,13 +26,14 @@ public class RedLightGreenLightGame {
     GameState mState = GameState.WAITING;
     boolean mIsRedLight = false;
     @Nullable BukkitTask mGameLogicTickTask;
-    @NotNull Random mRand = new Random();
+    @NotNull final Random mRand = new Random();
 
     public RedLightGreenLightGame() {
         mAnnouncer = new Announcer(mPlayers);
     }
 
     public void endGame() {
+        mState = GameState.ENDING;
         if(!Objects.isNull(mGameLogicTickTask)){
             mGameLogicTickTask.cancel();
         }
@@ -63,35 +42,25 @@ public class RedLightGreenLightGame {
             player.setAllowFlight(false);
             player.setFlying(false);
         }
+        mState = GameState.ENDED;
     }
 
-    /**
-     * Transitions game to target state if a transition is defined
-     *
-     * @return true if transition is valid, false if transition is invalid
-     */
-    public boolean transitionState(GameState target) {
-        TreeMap<StateTransition, Runnable> transitions = new TreeMap<>();
-        transitions.put(new StateTransition(GameState.WAITING, GameState.STARTING), () -> {
-            mState = GameState.STARTING;
-            Bukkit.getLogger().log(Level.INFO, "Starting Game: RedLightGreenLight");
-            mAnnouncer.sendMessage("Red Light Green Light game is starting!");
-            mPlayers.clearInventories();
-            registerEventCallbacks();
-            Countdown.startCountdown(5, "Starting in...", mAnnouncer, () -> {
-                mState = GameState.GAME;
-                mGameLogicTickTask = Bukkit.getScheduler().runTaskTimer(Main.getInstance(), this::gameLogicTick, 0, 40);
-            });
+    public void startGame() {
+        mState = GameState.STARTING;
+        Bukkit.getLogger().log(Level.INFO, "Starting Game: RedLightGreenLight");
+        mAnnouncer.sendMessage("Red Light Green Light game is starting!");
+        mPlayers.clearInventories();
+        registerEventCallbacks();
+        Countdown.startCountdown(5, "Starting in...", mAnnouncer, () -> {
+            mState = GameState.GAME;
+            mGameLogicTickTask = Bukkit.getScheduler().runTaskTimer(Main.getInstance(), this::gameLogicTick, 0, 40);
         });
-        var transition = transitions.get(new StateTransition(mState, target));
-        if (Objects.isNull(transition)) {
-            return false;
-        }
-        transition.run();
-        return true;
     }
 
     void gameLogicTick() {
+        if(mState != GameState.GAME){
+            return;
+        }
         if(mIsRedLight){
             if(mRand.nextDouble() <= 0.3){
                 switchToGreenLight();
@@ -151,9 +120,7 @@ public class RedLightGreenLightGame {
     private void switchToRedLight() {
         mAnnouncer.sendTitle(ChatColor.RED+"RED LIGHT", "stop", 0, 40, 20);
         mAnnouncer.sendMessage(ChatColor.RED+"Red Light");
-        Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
-            mIsRedLight = true;
-        }, 20);
+        Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> mIsRedLight = true, 20);
     }
 
     private void switchToGreenLight() {

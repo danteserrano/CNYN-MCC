@@ -1,4 +1,4 @@
-package io.github.danteserrano.games;
+package io.github.danteserrano.util;
 
 public class Announcer {
     private final PlayerManager mPlayerManager;

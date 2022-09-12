@@ -1,4 +1,4 @@
-package io.github.danteserrano.games;
+package io.github.danteserrano.util;
 
 import io.github.danteserrano.Main;
 import org.jetbrains.annotations.Nullable;

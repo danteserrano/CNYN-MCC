@@ -74,11 +74,10 @@ public class GameManagerCommandExecutor implements CommandExecutor {
         } else if (args.length == 2 && Objects.equals(args[0], "test")) {
             var testNumber = args[1];
             if(Objects.equals(testNumber, "1")){
-                if(!(sender instanceof Player)){
+                if(!(sender instanceof Player player)){
                     sender.sendMessage("Sender must be a Player for this command");
                     return true;
                 }
-                Player player = (Player) sender;
                 player.sendMessage("Executing test 1");
                 mGameManager.endAllGames();
                 try {
