@@ -11,6 +11,17 @@ import java.util.Objects;
 
 public class GameManagerCommandExecutor implements CommandExecutor {
     final GameManager mGameManager;
+
+    @NotNull
+    private GameType parseGameType(@NotNull String s) {
+        if(s.equals("rlgl") || s.equals("RedLightGreenLight") || s.equals("RED_LIGHT_GREEN_LIGHT")) {
+            return GameType.RED_LIGHT_GREEN_LIGHT;
+        } else if (s.equals("parkour") || s.equals("Parkour") || s.equals("PARKOUR")) {
+            return GameType.PARKOUR;
+        } else {
+            return GameType.PARKOUR;
+        }
+    }
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String @NotNull [] args) {
         // Remember to update GameManagerTabCompleter.java
@@ -18,10 +29,12 @@ public class GameManagerCommandExecutor implements CommandExecutor {
             sender.sendMessage("Ending all games...");
             mGameManager.endAllGames();
             return true;
-        } else if (args.length == 2 && Objects.equals(args[0], "create")) {
-            String lobbyName = args[1];
+        } else if (args.length == 3 && Objects.equals(args[0], "create")) {
+            String lobbyName = args[2];
+            String gameName = args[1];
+            GameType gameType = parseGameType(gameName);
             try {
-                mGameManager.createNewGame(lobbyName);
+                mGameManager.createNewGame(lobbyName, gameType);
             } catch (LobbyExistsException e) {
                 sender.sendMessage(e.toString());
                 return true;
@@ -41,7 +54,7 @@ public class GameManagerCommandExecutor implements CommandExecutor {
                 sender.sendMessage(String.format("Player `%s` not found", playerName));
                 return true;
             }
-            game.mPlayers.addPlayer(player.getUniqueId());
+            game.addPlayer(player.getUniqueId());
             sender.sendMessage(String.format("Added player `%s` to lobby `%s` (%s)", playerName, lobbyName, game.getClass().getSimpleName()));
             return true;
         }
@@ -82,15 +95,37 @@ public class GameManagerCommandExecutor implements CommandExecutor {
                 player.sendMessage("Executing test 1");
                 mGameManager.endAllGames();
                 try {
-                    mGameManager.createNewGame("test_lobby_1");
+                    mGameManager.createNewGame("test_lobby_1", GameType.RED_LIGHT_GREEN_LIGHT);
                 } catch (LobbyExistsException e) {
                     // unreachable
                     assert false;
                 }
                 var game = mGameManager.getGames().get("test_lobby_1");
-                game.mPlayers.addPlayer(player.getUniqueId());
+                game.addPlayer(player.getUniqueId());
                 try {
                     mGameManager.startGame("test_lobby_1");
+                } catch (LobbyNotFoundException e) {
+                    // unreachable
+                    assert false;
+                }
+                return true;
+            } else if(Objects.equals(testNumber, "2")){
+                if(!(sender instanceof Player player)){
+                    sender.sendMessage("Sender must be a Player for this command");
+                    return true;
+                }
+                player.sendMessage("Executing test 2");
+                mGameManager.endAllGames();
+                try {
+                    mGameManager.createNewGame("test_lobby_2", GameType.PARKOUR);
+                } catch (LobbyExistsException e) {
+                    // unreachable
+                    assert false;
+                }
+                var game = mGameManager.getGames().get("test_lobby_2");
+                game.addPlayer(player.getUniqueId());
+                try {
+                    mGameManager.startGame("test_lobby_2");
                 } catch (LobbyNotFoundException e) {
                     // unreachable
                     assert false;

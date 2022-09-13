@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.Random;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
@@ -27,6 +28,7 @@ public class RedLightGreenLightGame implements Game {
     boolean mIsRedLight = false;
     @Nullable BukkitTask mGameLogicTickTask;
     @NotNull final Random mRand = new Random();
+    @Nullable final CollisionBox mSafeZone = CollisionBox.fromConfig("red-light-green-light-safe-zone");
 
     public RedLightGreenLightGame() {
         mAnnouncer = new Announcer(mPlayers);
@@ -43,6 +45,11 @@ public class RedLightGreenLightGame implements Game {
             player.setFlying(false);
         }
         mState = GameState.ENDED;
+    }
+
+    @Override
+    public void addPlayer(UUID playerUniqueId) {
+        mPlayers.addPlayer(playerUniqueId);
     }
 
     public void startGame() {

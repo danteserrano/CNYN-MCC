@@ -1,10 +1,10 @@
-collision-boxes:
-  red-light-green-light-safe:
-    p1:
-      x: 10
-      y: 60
-      z: 10
-    p2:
-      x: 20
-      y: 65
-      z: 15
+red-light-green-light-safe-zone:
+  - [10, 60, 10]
+  - [20, 65, 15]
+parkour-kill-zone:
+  - [10, 60, 10]
+  - [20, 65, 15]
+parkour-checkpoints:
+  - [1, 1, 1]
+  - [2, 2, 2]
+  - [3, 3, 3]

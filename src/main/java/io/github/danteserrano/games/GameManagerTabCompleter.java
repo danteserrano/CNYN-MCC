@@ -5,13 +5,12 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameManagerTabCompleter implements TabCompleter {
-    private GameManager mGameManager;
+    private final GameManager mGameManager;
 
     @NotNull
     @Override
@@ -24,6 +23,9 @@ public class GameManagerTabCompleter implements TabCompleter {
             output.add("list");
             output.add("start");
             output.add("test");
+        } else if (args.length == 2 && args[0].equals("create")) {
+            output.add("RED_LIGHT_GREEN_LIGHT");
+            output.add("PARKOUR");
         } else if (args.length == 2 && args[0].equals("start")) {
             output.addAll(mGameManager.getGames().keySet());
         } else if (args.length == 3 && args[0].equals("addplayer")) {
@@ -35,6 +37,7 @@ public class GameManagerTabCompleter implements TabCompleter {
             }
         } else if (args.length == 2 && args[0].equals("test")) {
             output.add("1");
+            output.add("2");
         }
         return output;
     }

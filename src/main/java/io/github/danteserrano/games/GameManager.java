@@ -29,16 +29,21 @@ class LobbyNotFoundException extends Exception {
 }
 
 public class GameManager {
-    private final TreeMap<String, RedLightGreenLightGame> mGames = new TreeMap<>();
+    private final TreeMap<String, Game> mGames = new TreeMap<>();
 
     public GameManager() {
     }
 
-    public void createNewGame(String lobbyName) throws LobbyExistsException {
+    public void createNewGame(String lobbyName, GameType gameType) throws LobbyExistsException {
         if (mGames.containsKey(lobbyName)) {
             throw new LobbyExistsException(lobbyName);
         }
-        RedLightGreenLightGame game = new RedLightGreenLightGame();
+        Game game;
+        switch (gameType) {
+            case PARKOUR -> game = new ParkourGame();
+            case RED_LIGHT_GREEN_LIGHT -> game = new RedLightGreenLightGame();
+            default -> game = null;
+        }
         mGames.put(lobbyName, game);
     }
 
@@ -54,12 +59,12 @@ public class GameManager {
         if (!mGames.containsKey(lobbyName)) {
             throw new LobbyNotFoundException(lobbyName);
         }
-        RedLightGreenLightGame game = mGames.get(lobbyName);
+        Game game = mGames.get(lobbyName);
         game.endGame();
         mGames.remove(lobbyName);
     }
 
-    public @NotNull TreeMap<String, RedLightGreenLightGame> getGames() {
+    public @NotNull TreeMap<String, Game> getGames() {
         return mGames;
     }
 
