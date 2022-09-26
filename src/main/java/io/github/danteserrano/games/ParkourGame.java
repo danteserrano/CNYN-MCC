@@ -1,9 +1,9 @@
 package io.github.danteserrano.games;
 
+import io.github.danteserrano.Main;
 import io.github.danteserrano.events.PlayerMoveListener;
 import io.github.danteserrano.util.*;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -16,20 +16,26 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
-public class ParkourGame implements Game{
+public class ParkourGame implements Game {
     final @NotNull PlayerManager mPlayers = new PlayerManager();
     final @NotNull Announcer mAnnouncer;
-    @Nullable ComparableWrapper<Consumer<PlayerMoveEvent>> mPlayerMoveCallback;
-    @NotNull TreeMap<UUID, Integer> mPlayerCheckpoints = new TreeMap<UUID, Integer>();
+    @Nullable
+    ComparableWrapper<Consumer<PlayerMoveEvent>> mPlayerMoveCallback;
+    @NotNull
+    TreeMap<UUID, Integer> mPlayerCheckpoints = new TreeMap<UUID, Integer>();
 
     GameState mState = GameState.WAITING;
-    CollisionBox mKillZone;
-    ArrayList<Vector3> mCheckpoints;
+    final @NotNull CollisionBox mKillZone = CollisionBox.fromConfig("parkour-kill-zone").orElseGet(() -> {
+        Bukkit.getLogger().log(Level.WARNING, "Could not find collision box from config `parkour-kill-zone`");
+        return new CollisionBox(new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+    });
+    final @NotNull ArrayList<Vector3> mCheckpoints = Vector3.arrayFromConfig("parkour-checkpoints").orElseGet(() -> {
+        Main.getInstance().getLogger().log(Level.SEVERE, "Parkour checkpoints are not configured correctly.");
+        return new ArrayList<Vector3>();
+    });
 
     public ParkourGame() {
         mAnnouncer = new Announcer(mPlayers);
-        mKillZone = CollisionBox.fromConfig("parkour-kill-zone");
-        mCheckpoints = Vector3.arrayFromConfig("parkour-checkpoints");
     }
 
     @Override
@@ -72,13 +78,13 @@ public class ParkourGame implements Game{
     }
 
     private void switchPlayerCheckpoint(Player player, Integer checkpointIndex) {
-        if(checkpointIndex >= mCheckpoints.size()) {
+        if (checkpointIndex >= mCheckpoints.size()) {
             player.sendMessage("Tried to switch to a checkpoint that doesn't exist");
             return;
         }
         UUID uuid = player.getUniqueId();
         mPlayerCheckpoints.put(uuid, checkpointIndex);
-        player.sendMessage(String.format("Checkpoint! (%d/%d)", checkpointIndex+1, mCheckpoints.size()));
+        player.sendMessage(String.format("Checkpoint! (%d/%d)", checkpointIndex + 1, mCheckpoints.size()));
         player.stopSound(Sound.ENTITY_PLAYER_LEVELUP);
     }
 
@@ -94,9 +100,11 @@ public class ParkourGame implements Game{
         UUID uuid = player.getUniqueId();
         Integer currentCheckpointIndex = mPlayerCheckpoints.get(uuid);
         Integer nextCheckpointIndex = currentCheckpointIndex + 1;
-        if(nextCheckpointIndex >= mCheckpoints.size()) { return false; }
+        if (nextCheckpointIndex >= mCheckpoints.size()) {
+            return false;
+        }
         Vector3 nextCheckpointLocation = mCheckpoints.get(nextCheckpointIndex);
-        double distance =  nextCheckpointLocation.distance(location);
+        double distance = nextCheckpointLocation.distance(location);
         return (distance < 2.0);
     }
 
@@ -109,7 +117,7 @@ public class ParkourGame implements Game{
         }
         if (mState == GameState.GAME) {
             Player player = event.getPlayer();
-            if(isNearNextCheckpoint(player)){
+            if (isNearNextCheckpoint(player)) {
                 incrementPlayerCheckpoint(player);
             }
         }

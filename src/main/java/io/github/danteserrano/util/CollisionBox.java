@@ -1,25 +1,30 @@
 package io.github.danteserrano.util;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class CollisionBox {
     final Vector3 mP1;
     final Vector3 mP2;
 
-    @Nullable
-    public static CollisionBox fromConfig(String path) {
-        ArrayList<Vector3> points = Vector3.arrayFromConfig(path);
-        if(points == null) { return null; }
-        if(points.size() != 2) { return null; }
+    public static Optional<CollisionBox> fromConfig(String path) {
+        Optional<ArrayList<Vector3>> pointsOptional = Vector3.arrayFromConfig(path);
+        if (pointsOptional.isEmpty()) {
+            return Optional.empty();
+        }
+        ArrayList<Vector3> points = pointsOptional.get();
+        if (points.size() != 2) {
+            return Optional.empty();
+        }
         Vector3 p1 = points.get(0);
         Vector3 p2 = points.get(1);
-        if(p1 == null) { return  null; }
-        if (p2 == null) {
-            return null;
+        if (p1 == null) {
+            return Optional.empty();
         }
-        return new CollisionBox(p1, p2);
+        if (p2 == null) {
+            return Optional.empty();
+        }
+        return Optional.of(new CollisionBox(p1, p2));
     }
 
     public CollisionBox(Vector3 p1, Vector3 p2) {

@@ -2,42 +2,42 @@ package io.github.danteserrano.util;
 
 import io.github.danteserrano.Main;
 import org.bukkit.Location;
-import org.jetbrains.annotations.Nullable;
+import org.bukkit.World;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Vector3 {
-    @Nullable
     public static Vector3 fromConfig(String path) {
         var point = Main.getInstance().getConfig().getIntegerList(path);
         return fromList(point);
     }
 
-    @Nullable
-    public static ArrayList<Vector3> arrayFromConfig(String path) {
+    public static Optional<ArrayList<Vector3>> arrayFromConfig(String path) {
         var list = Main.getInstance().getConfig().get(path);
         if(!(list instanceof List)) {
-            return null;
+            return Optional.empty();
         }
         ArrayList<Vector3> output = new ArrayList<>();
         for(var p : (List<?>) list) {
-            if(!(p instanceof List<?> point)) { return null; }
-            if(point.size() != 3) { return null; }
-            if(!(point.get(0) instanceof Integer)) return null;
-            if(!(point.get(1) instanceof Integer)) return null;
-            if(!(point.get(2) instanceof Integer)) return null;
+            if(!(p instanceof List<?> point)) { return Optional.empty(); }
+            if(point.size() != 3) { return Optional.empty(); }
+            if(!(point.get(0) instanceof Integer)) return Optional.empty();
+            if(!(point.get(1) instanceof Integer)) return Optional.empty();
+            if(!(point.get(2) instanceof Integer)) return Optional.empty();
             output.add(fromList((List<Integer>) point));
         }
-        return output;
+        return Optional.of(output);
     }
 
-    @Nullable
     public static Vector3 fromList(List<Integer> l){
         if(l.size() == 3) {
             return new Vector3(l.get(0), l.get(1), l.get(2));
+        } else {
+            l.add(0);
+            return fromList(l);
         }
-        return null;
     }
 
     public double x;
@@ -71,5 +71,9 @@ public class Vector3 {
                   Math.pow(Math.abs(this.x - other.x), 2)
                 + Math.pow(Math.abs(this.y - other.y), 2)
                 + Math.pow(Math.abs(this.z - other.z), 2));
+    }
+
+    public Location toLocation(World world) {
+        return new Location(world, this.x, this.y, this.z);
     }
 }
