@@ -18,6 +18,8 @@ public class GameManagerCommandExecutor implements CommandExecutor {
             return GameType.RED_LIGHT_GREEN_LIGHT;
         } else if (s.equals("parkour") || s.equals("Parkour") || s.equals("PARKOUR")) {
             return GameType.PARKOUR;
+        } else if (s.equals("musical_chairs") || s.equals("MusicalChairs") || s.equals("MUSICAL_CHAIRS")) {
+            return GameType.MUSICAL_CHAIRS;
         } else {
             return GameType.PARKOUR;
         }

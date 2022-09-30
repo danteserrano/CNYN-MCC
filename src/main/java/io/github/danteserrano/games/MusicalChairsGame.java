@@ -3,6 +3,7 @@ package io.github.danteserrano.games;
 import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -11,7 +12,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 import io.github.danteserrano.Main;
+import io.github.danteserrano.events.VehicleEnterListener;
 import io.github.danteserrano.util.Announcer;
+import io.github.danteserrano.util.ComparableWrapper;
 import io.github.danteserrano.util.Countdown;
 import io.github.danteserrano.util.PlayerManager;
 import io.github.danteserrano.util.Util;
@@ -26,6 +29,7 @@ public class MusicalChairsGame implements Game {
     int mAvailableChairs = 0;
     Random mRandom = new Random();
     Vector3 mGameCenter = Vector3.fromConfig("musical-chairs-game-center");
+    private ComparableWrapper<Consumer<VehicleEnterEvent>> mVehicleEnterCallback;
 
     public MusicalChairsGame() {
         mAnnouncer = new Announcer(mPlayers);
@@ -80,6 +84,7 @@ public class MusicalChairsGame implements Game {
         mState = GameState.STARTING;
         mAnnouncer.sendMessage("Musical Chairs game is starting!");
         gameSetup();
+        registerEventCallbacks();
         // Start countdown:
         Countdown.startCountdown(5, "Musical Chairs are starting!", mAnnouncer, () -> {
             mState = GameState.GAME;
@@ -91,6 +96,7 @@ public class MusicalChairsGame implements Game {
     @Override
     public void endGame() {
         mState = GameState.ENDING;
+        unregisterEventCallbacks();
         mState = GameState.ENDED;
     }
 
@@ -105,7 +111,7 @@ public class MusicalChairsGame implements Game {
         return mState;
     }
 
-    private void onPlayerSitEvent(VehicleEnterEvent event) {
+    private void onVehicleEnterEvent(VehicleEnterEvent event) {
         if(mState != GameState.GAME) { return; }
         if(!(event.getEntered() instanceof Player)) { return; }
         Player player = (Player) event.getEntered();
@@ -115,5 +121,14 @@ public class MusicalChairsGame implements Game {
             event.setCancelled(true);
             return;
         }
+    }
+
+    private void registerEventCallbacks() {
+        mVehicleEnterCallback = new ComparableWrapper<>(this::onVehicleEnterEvent);
+        VehicleEnterListener.addCallback(mVehicleEnterCallback);
+    }
+
+    private void unregisterEventCallbacks() {
+        VehicleEnterListener.removeCallback(mVehicleEnterCallback);
     }
 }

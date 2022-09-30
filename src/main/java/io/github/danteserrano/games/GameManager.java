@@ -42,6 +42,7 @@ public class GameManager {
         switch (gameType) {
             case PARKOUR -> game = new ParkourGame();
             case RED_LIGHT_GREEN_LIGHT -> game = new RedLightGreenLightGame();
+            case MUSICAL_CHAIRS -> game = new MusicalChairsGame();
             default -> game = null;
         }
         mGames.put(lobbyName, game);

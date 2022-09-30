@@ -26,6 +26,7 @@ public class GameManagerTabCompleter implements TabCompleter {
         } else if (args.length == 2 && args[0].equals("create")) {
             output.add("RED_LIGHT_GREEN_LIGHT");
             output.add("PARKOUR");
+            output.add("MUSICAL_CHAIRS");
         } else if (args.length == 2 && args[0].equals("start")) {
             output.addAll(mGameManager.getGames().keySet());
         } else if (args.length == 3 && args[0].equals("addplayer")) {
